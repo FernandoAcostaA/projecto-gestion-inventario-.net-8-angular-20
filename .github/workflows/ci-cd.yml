@@ -1,4 +1,4 @@
-name: CI/CD Pipeline — PedidosApi
+name: CI/CD Pipeline â€” PedidosApi
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - run: dotnet restore PedidosApi/PedidosApi.csproj
-      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release --no-restore
+      - run: dotnet restore PedidosApi/PedidosApi/PedidosApi.csproj
+      - run: dotnet build PedidosApi/PedidosApi/PedidosApi.csproj --configuration Release --no-restore
 
   build:
     name: Build Release
@@ -27,9 +27,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - run: dotnet restore PedidosApi/PedidosApi.csproj
-      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release --no-restore
-      - run: dotnet publish PedidosApi/PedidosApi.csproj --configuration Release --output ./publish
+      - run: dotnet restore PedidosApi/PedidosApi/PedidosApi.csproj
+      - run: dotnet build PedidosApi/PedidosApi/PedidosApi.csproj --configuration Release --no-restore
+      - run: dotnet publish PedidosApi/PedidosApi/PedidosApi.csproj --configuration Release --output ./publish
       - uses: actions/upload-artifact@v4
         with:
           name: app-build-${{ github.sha }}
@@ -44,8 +44,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release
-      - run: echo "Sin proyecto de pruebas aún - pendiente Sprint 2"
+      - run: dotnet build PedidosApi/PedidosApi/PedidosApi.csproj --configuration Release
+      - run: echo "Sin proyecto de pruebas aÃºn - pendiente Sprint 2"
 
   deploy:
     name: Deploy to Staging
