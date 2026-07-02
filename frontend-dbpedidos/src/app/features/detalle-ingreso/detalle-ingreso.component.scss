@@ -1,0 +1,163 @@
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  input, select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input::placeholder {
+    color: #aaa;
+  }
+
+  select {
+    min-width: 80px;
+  }
+}
+
+.toggle-form-btn {
+  margin-bottom: 1rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: #125ca1;
+  }
+}
+
+.card {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+form .row .form-control, form .row .form-select {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+form .btn {
+  min-width: 100px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+
+  th {
+    background-color: #f0f0f0;
+    padding: 0.6rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+  }
+
+  td {
+    padding: 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+
+  tr:nth-child(even) {
+    background-color: #fcfcfc;
+  }
+
+  tr:hover {
+    background-color: #eef6ff;
+  }
+
+  button {
+    padding: 0.3rem 0.6rem;
+    margin: 0 2px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1976d2;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background-color: #125ca1;
+    }
+
+    &.btn-danger {
+      background-color: #dc3545;
+
+      &:hover {
+        background-color: #b52a36;
+      }
+    }
+
+    &.btn-warning {
+      background-color: #ffc107;
+      color: #212529;
+
+      &:hover {
+        background-color: #e0a800;
+      }
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+
+  .page-item {
+    margin: 0 0.25rem;
+
+    .page-link {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #1976d2;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background-color: #125ca1;
+      }
+    }
+
+    &.disabled .page-link {
+      background-color: #ccc;
+      cursor: default;
+    }
+
+    &.active .page-link {
+      background-color: #125ca1;
+      font-weight: bold;
+    }
+  }
+}

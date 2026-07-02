@@ -1,0 +1,48 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Build directories
+bin
+obj
+out
+dist
+build
+.vs
+.vscode
+
+# Dependencies
+node_modules
+packages
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+test-results
+coverage
+*.trx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Source code management
+.github
+
+# Documentation
+*.md
+docs/
+README.md
+
+# CI/CD
+docker-compose.override.yml

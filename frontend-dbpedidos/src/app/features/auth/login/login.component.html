@@ -1,0 +1,33 @@
+<div class="register-wrapper">
+  <div class="register-box">
+    <h1 class="app-title">Gestión de Empresa</h1>
+    <h2 class="register-title">Iniciar Sesión</h2>
+
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <div class="form-group">
+        <label for="userName">Usuario:</label>
+        <div class="input-icon">
+          <i class="fa fa-user"></i>
+          <input id="userName" type="text" formControlName="userName" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña:</label>
+        <div class="input-icon">
+          <i class="fa fa-lock"></i>
+          <input id="password" type="password" formControlName="password" />
+        </div>
+      </div>
+
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+
+      <button type="submit" class="btn-register">Ingresar</button>
+    </form>
+
+    <p class="login-link">
+      ¿No tienes cuenta?
+      <button type="button" (click)="goToRegister()">Registrarse</button>
+    </p>
+  </div>
+</div>

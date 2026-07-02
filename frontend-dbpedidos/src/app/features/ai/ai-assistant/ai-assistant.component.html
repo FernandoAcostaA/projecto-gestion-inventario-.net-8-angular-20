@@ -1,0 +1,77 @@
+<!-- Chat bubble button -->
+<button class="ai-chat-toggle" (click)="toggleChat()">
+  <i class="fas" [class.fa-robot]="!isOpen()" [class.fa-times]="isOpen()"></i>
+</button>
+
+<!-- Chat panel -->
+@if (isOpen()) {
+  <div class="ai-chat-panel">
+    <div class="ai-chat-header">
+      <i class="fas fa-robot"></i>
+      <span>Asistente IA</span>
+      <button class="ai-close-btn" (click)="toggleChat()">&times;</button>
+    </div>
+
+    <div class="ai-chat-messages">
+      @for (msg of messages(); track $index) {
+        <div class="ai-message" [class.ai-user]="msg.role === 'user'" [class.ai-assistant]="msg.role === 'assistant'">
+          <div class="ai-avatar">
+            @if (msg.role === 'assistant') {
+              <i class="fas fa-robot"></i>
+            } @else {
+              <i class="fas fa-user"></i>
+            }
+          </div>
+          <div class="ai-bubble">
+            <p>{{ msg.content }}</p>
+            @if (msg.actions && msg.actions.length > 0) {
+              <div class="ai-actions">
+                @for (action of msg.actions; track $index) {
+                  <button class="ai-action-btn" (click)="executeAction(action)">
+                    <i class="fas fa-arrow-right"></i> {{ action.label }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (!loading() && messages().length === 1) {
+        <div class="ai-quick-actions">
+          @for (action of quickActions; track $index) {
+            <button class="ai-quick-btn" (click)="sendQuickAction(action.message)">
+              {{ action.label }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="ai-message ai-assistant">
+          <div class="ai-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="ai-bubble">
+            <div class="ai-typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="ai-chat-input">
+      <input
+        type="text"
+        [(ngModel)]="message"
+        (keyup.enter)="sendMessage()"
+        placeholder="Escribe tu mensaje..."
+        [disabled]="loading()"
+      />
+      <button (click)="sendMessage()" [disabled]="loading() || !message.trim()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+}

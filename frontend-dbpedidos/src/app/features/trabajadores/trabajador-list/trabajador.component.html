@@ -1,0 +1,133 @@
+<div class="container">
+  <h2 class="title">Listado de Trabajadores</h2>
+
+  <div class="toolbar">
+    <input [(ngModel)]="filtro" (ngModelChange)="actualizarVista()" placeholder="Buscar por cualquier campo" />
+    <select [(ngModel)]="cantidadPorPagina" (change)="actualizarVista()">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+    </select>
+    <button (click)="mostrarFormulario = !mostrarFormulario">
+      {{ mostrarFormulario ? 'Ocultar Formulario' : (editandoId ? 'Editar Trabajador' : 'Registrar Trabajador') }}
+    </button>
+  </div>
+
+  <div *ngIf="mostrarFormulario" class="formulario">
+    <h3>{{ editandoId ? 'Editar Trabajador' : 'Registrar Trabajador' }}</h3>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label>
+        Nombre:
+        <input type="text" formControlName="nombre" placeholder="Nombre" />
+      </label>
+
+      <label>
+        Apellidos:
+        <input type="text" formControlName="apellidos" placeholder="Apellidos" />
+      </label>
+
+      <label>
+        Sexo:
+        <select formControlName="sexo">
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </label>
+
+      <label>
+        Fecha de Nacimiento:
+        <input type="date" formControlName="fechaNacimiento" />
+      </label>
+
+      <label>
+        N° Documento:
+        <input type="text" formControlName="numDocumento" placeholder="N° Documento" />
+      </label>
+
+      <label>
+        Dirección:
+        <input type="text" formControlName="direccion" placeholder="Dirección" />
+      </label>
+
+      <label>
+        Teléfono:
+        <input type="text" formControlName="telefono" placeholder="Teléfono" />
+      </label>
+
+      <label>
+        Email:
+        <input type="email" formControlName="email" placeholder="Email" />
+      </label>
+
+      <label>
+        Acceso:
+        <select formControlName="acceso">
+          <option value="Usuario">Usuario</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </label>
+
+      <label>
+        Usuario:
+        <input type="text" formControlName="usuario" placeholder="Usuario" />
+      </label>
+
+      <label>
+        Contraseña:
+        <input type="password" formControlName="password" placeholder="Contraseña" />
+      </label>
+
+      <button type="submit" [disabled]="form.invalid">
+        {{ editandoId ? 'Actualizar' : 'Registrar' }}
+      </button>
+      <button type="button" (click)="cancelar()">Cancelar</button>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th (click)="cambiarOrden('idTrabajador')">ID</th>
+        <th (click)="cambiarOrden('nombre')">Nombre</th>
+        <th (click)="cambiarOrden('apellidos')">Apellidos</th>
+        <th (click)="cambiarOrden('sexo')">Sexo</th>
+        <th (click)="cambiarOrden('fechaNacimiento')">F. Nac.</th>
+        <th (click)="cambiarOrden('numDocumento')">N° Doc</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th (click)="cambiarOrden('acceso')">Acceso</th>
+        <th (click)="cambiarOrden('usuario')">Usuario</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of trabajadoresPaginados">
+        <td>{{ t.idTrabajador }}</td>
+        <td>{{ t.nombre }}</td>
+        <td>{{ t.apellidos }}</td>
+        <td>{{ t.sexo }}</td>
+        <td>{{ t.fechaNacimiento.substring(0,10) }}</td>
+        <td>{{ t.numDocumento }}</td>
+        <td>{{ t.direccion }}</td>
+        <td>{{ t.telefono }}</td>
+        <td>{{ t.email }}</td>
+        <td>{{ t.acceso }}</td>
+        <td>{{ t.usuario }}</td>
+        <td>
+          <button (click)="editar(t)">Editar</button>
+          <button (click)="eliminar(t.idTrabajador!)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
+    <span>Página {{ paginaActual }}</span>
+    <button
+      [disabled]="paginaActual * cantidadPorPagina >= trabajadoresFiltrados.length"
+      (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
+  </div>
+</div>

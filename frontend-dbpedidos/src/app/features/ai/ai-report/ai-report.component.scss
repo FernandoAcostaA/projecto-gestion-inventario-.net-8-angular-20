@@ -1,0 +1,116 @@
+.ai-report-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Segoe UI', sans-serif;
+
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+
+    i { margin-right: 10px; color: #3498db; }
+  }
+
+  .ai-report-desc {
+    color: #666;
+    margin-bottom: 24px;
+  }
+
+  .ai-report-form {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .form-group {
+      margin-bottom: 16px;
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #444;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        resize: vertical;
+        transition: border-color 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+        }
+
+        &:disabled { background: #f8f9fa; }
+      }
+
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+          border-color: #3498db;
+        }
+
+        &:disabled { background: #f8f9fa; }
+      }
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 14px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      i { margin-right: 8px; }
+
+      &:hover:not(:disabled) { background: #2980b9; }
+      &:disabled { opacity: 0.5; cursor: not-allowed; }
+    }
+  }
+
+  .ai-report-result {
+    margin-top: 24px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .report-header {
+      background: #2c3e50;
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h3 { margin: 0; font-size: 16px; }
+      i { font-size: 20px; }
+    }
+
+    .report-content {
+      padding: 20px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      font-size: 14px;
+      color: #333;
+    }
+  }
+}

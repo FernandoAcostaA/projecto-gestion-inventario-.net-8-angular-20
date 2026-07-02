@@ -1,0 +1,139 @@
+.container {
+  background-color: #fff;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 900px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #1e293b;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  input {
+    padding: 6px;
+    width: 300px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  select {
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+
+  th, td {
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f1f5f9;
+    cursor: pointer;
+  }
+}
+
+.paginacion {
+  text-align: center;
+  margin: 1rem 0;
+
+  button {
+    margin: 0 0.5rem;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #cbd5e1;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
+
+button.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+button.btn-warning {
+  background-color: #facc15;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+button.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    font-weight: bold;
+    color: #1f2937;
+  }
+
+  input {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-success {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .btn-cancelar {
+      background-color: #6b7280;
+      color: white;
+    }
+  }
+}

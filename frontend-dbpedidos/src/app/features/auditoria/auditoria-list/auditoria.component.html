@@ -1,0 +1,84 @@
+<div class="container">
+  <h2 class="title">Registro de Auditoría</h2>
+
+  <div class="filtros">
+    <label>Entidad:
+      <select [(ngModel)]="filtro.entityName">
+        <option value="">Todas</option>
+        <option *ngFor="let name of entityNames" [value]="name">{{ name }}</option>
+      </select>
+    </label>
+    <label>Acción:
+      <select [(ngModel)]="filtro.action">
+        <option value="">Todas</option>
+        <option value="Added">Creación</option>
+        <option value="Modified">Modificación</option>
+        <option value="Deleted">Eliminación</option>
+      </select>
+    </label>
+    <label>Desde:
+      <input type="datetime-local" [(ngModel)]="filtro.desde" />
+    </label>
+    <label>Hasta:
+      <input type="datetime-local" [(ngModel)]="filtro.hasta" />
+    </label>
+    <button class="btn-primary" (click)="buscar()">Filtrar</button>
+  </div>
+
+  <div *ngIf="cargando" class="cargando">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="logs.length > 0 && !cargando">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fecha</th>
+        <th>Entidad</th>
+        <th>ID</th>
+        <th>Acción</th>
+        <th>Usuario</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let log of logs">
+        <tr (click)="toggleExpand(log.id)" class="fila-clickeable">
+          <td>{{ log.id }}</td>
+          <td>{{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td>{{ log.entityName }}</td>
+          <td>{{ log.entityId }}</td>
+          <td><span class="badge {{ claseAccion(log.action) }}">{{ textoAccion(log.action) }}</span></td>
+          <td>{{ log.userName || '—' }}</td>
+          <td><i class="fas" [class.fa-chevron-down]="expandedId !== log.id" [class.fa-chevron-up]="expandedId === log.id"></i></td>
+        </tr>
+        <tr *ngIf="expandedId === log.id" class="detalle-fila">
+          <td colspan="7">
+            <div class="detalle-grid">
+              <div *ngIf="log.oldValues">
+                <strong>Valores Anteriores:</strong>
+                <pre>{{ formatearJson(log.oldValues) }}</pre>
+              </div>
+              <div *ngIf="log.newValues">
+                <strong>Valores Nuevos:</strong>
+                <pre>{{ formatearJson(log.newValues) }}</pre>
+              </div>
+              <div *ngIf="!log.oldValues && !log.newValues" class="sin-cambios">Sin detalles de cambios</div>
+            </div>
+            <div class="detalle-meta">
+              <span><strong>IP:</strong> {{ log.ipAddress || '—' }}</span>
+              <span><strong>Usuario:</strong> {{ log.userName || '—' }}</span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <p *ngIf="logs.length === 0 && !cargando && !error" class="sin-datos">No se encontraron registros de auditoría.</p>
+
+  <div class="paginacion" *ngIf="logs.length > 0">
+    <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1">Anterior</button>
+    Página {{ paginaActual }}
+    <button (click)="cambiarPagina(1)" [disabled]="logs.length < paginaSize">Siguiente</button>
+  </div>
+</div>

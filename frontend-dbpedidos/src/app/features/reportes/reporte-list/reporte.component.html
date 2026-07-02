@@ -1,0 +1,169 @@
+<div class="container">
+  <h2 class="title">Reportes y Estadísticas</h2>
+
+  <div class="pestanas">
+    <button [class.activa]="pestanaActiva === 'resumen'" (click)="cambiarPestana('resumen')">
+      <i class="fas fa-chart-pie"></i> Resumen
+    </button>
+    <button [class.activa]="pestanaActiva === 'ventas'" (click)="cambiarPestana('ventas')">
+      <i class="fas fa-chart-line"></i> Ventas por Período
+    </button>
+    <button [class.activa]="pestanaActiva === 'top'" (click)="cambiarPestana('top')">
+      <i class="fas fa-trophy"></i> Top Artículos
+    </button>
+    <button [class.activa]="pestanaActiva === 'proveedores'" (click)="cambiarPestana('proveedores')">
+      <i class="fas fa-truck"></i> Ingresos x Proveedor
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="cargando">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- TAB: RESUMEN -->
+  <div *ngIf="pestanaActiva === 'resumen' && resumen">
+    <div class="dashboard-grid">
+      <div class="card-dashboard">
+        <i class="fas fa-users"></i>
+        <span class="card-numero">{{ resumen.totalClientes }}</span>
+        <span class="card-label">Clientes</span>
+      </div>
+      <div class="card-dashboard">
+        <i class="fas fa-truck"></i>
+        <span class="card-numero">{{ resumen.totalProveedores }}</span>
+        <span class="card-label">Proveedores</span>
+      </div>
+      <div class="card-dashboard">
+        <i class="fas fa-boxes"></i>
+        <span class="card-numero">{{ resumen.totalArticulos }}</span>
+        <span class="card-label">Artículos</span>
+      </div>
+      <div class="card-dashboard">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="card-numero">{{ resumen.articulosStockBajo }}</span>
+        <span class="card-label">Stock Bajo</span>
+      </div>
+      <div class="card-dashboard">
+        <i class="fas fa-cash-register"></i>
+        <span class="card-numero">{{ resumen.ventasHoy }}</span>
+        <span class="card-label">Ventas Hoy</span>
+        <span class="card-monto">Bs {{ resumen.totalVentasHoy | number:'1.2-2' }}</span>
+      </div>
+      <div class="card-dashboard">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span class="card-numero">{{ resumen.ingresosHoy }}</span>
+        <span class="card-label">Ingresos Hoy</span>
+        <span class="card-monto">Bs {{ resumen.totalIngresosHoy | number:'1.2-2' }}</span>
+      </div>
+      <div class="card-dashboard card-mes">
+        <i class="fas fa-chart-bar"></i>
+        <span class="card-label">Ventas del Mes</span>
+        <span class="card-monto">Bs {{ resumen.ventasMesActual | number:'1.2-2' }}</span>
+      </div>
+      <div class="card-dashboard card-mes">
+        <i class="fas fa-chart-bar"></i>
+        <span class="card-label">Ingresos del Mes</span>
+        <span class="card-monto">Bs {{ resumen.ingresosMesActual | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: VENTAS POR PERIODO -->
+  <div *ngIf="pestanaActiva === 'ventas'">
+    <div class="filtros">
+      <label>Fecha Inicio: <input type="date" [(ngModel)]="ventasFiltro.fechaInicio" /></label>
+      <label>Fecha Fin: <input type="date" [(ngModel)]="ventasFiltro.fechaFin" /></label>
+      <label>Agrupar:
+        <select [(ngModel)]="ventasFiltro.agrupacion">
+          <option value="dia">Día</option>
+          <option value="semana">Semana</option>
+          <option value="mes">Mes</option>
+        </select>
+      </label>
+      <button class="btn-primary" (click)="cargarVentas()">Consultar</button>
+    </div>
+
+    <table *ngIf="ventas.length > 0">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Cantidad Ventas</th>
+          <th>Total (Bs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of ventas">
+          <td>{{ v.periodo }}</td>
+          <td>{{ v.cantidad }}</td>
+          <td>{{ v.total | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="ventas.length === 0 && !cargando" class="sin-datos">Selecciona un rango y consulta.</p>
+  </div>
+
+  <!-- TAB: TOP ARTICULOS -->
+  <div *ngIf="pestanaActiva === 'top'">
+    <div class="filtros">
+      <label>Fecha Inicio: <input type="date" [(ngModel)]="topFiltro.fechaInicio" /></label>
+      <label>Fecha Fin: <input type="date" [(ngModel)]="topFiltro.fechaFin" /></label>
+      <label>Top:
+        <select [(ngModel)]="topFiltro.top">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+      </label>
+      <button class="btn-primary" (click)="cargarTopArticulos()">Consultar</button>
+    </div>
+
+    <table *ngIf="topArticulos.length > 0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Artículo</th>
+          <th>Categoría</th>
+          <th>Total Vendido</th>
+          <th>Total Ingresos (Bs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of topArticulos; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ a.nombre }}</td>
+          <td>{{ a.categoria }}</td>
+          <td>{{ a.totalVendido }}</td>
+          <td>{{ a.totalIngresos | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="topArticulos.length === 0 && !cargando" class="sin-datos">Selecciona un rango y consulta.</p>
+  </div>
+
+  <!-- TAB: INGRESOS POR PROVEEDOR -->
+  <div *ngIf="pestanaActiva === 'proveedores'">
+    <div class="filtros">
+      <label>Fecha Inicio: <input type="date" [(ngModel)]="ingresosFiltro.fechaInicio" /></label>
+      <label>Fecha Fin: <input type="date" [(ngModel)]="ingresosFiltro.fechaFin" /></label>
+      <button class="btn-primary" (click)="cargarIngresos()">Consultar</button>
+    </div>
+
+    <table *ngIf="ingresos.length > 0">
+      <thead>
+        <tr>
+          <th>Proveedor</th>
+          <th>Cantidad Compras</th>
+          <th>Total Gastado (Bs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of ingresos">
+          <td>{{ i.proveedor }}</td>
+          <td>{{ i.cantidadCompras }}</td>
+          <td>{{ i.totalGastado | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="ingresos.length === 0 && !cargando" class="sin-datos">Selecciona un rango y consulta.</p>
+  </div>
+</div>

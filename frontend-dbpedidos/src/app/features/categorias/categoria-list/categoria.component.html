@@ -1,0 +1,59 @@
+<div class="container">
+  <h2 class="title">Listado de Categorías</h2>
+
+  <div class="toolbar">
+    <input [(ngModel)]="filtro" placeholder="Buscar por nombre o descripción..." />
+    <select [(ngModel)]="categoriasPorPagina">
+      <option *ngFor="let opcion of [5, 10, 25, 50]" [value]="opcion">{{ opcion }}</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th (click)="ordenarPor('idCategoria')">ID</th>
+        <th (click)="ordenarPor('nombre')">Nombre</th>
+        <th (click)="ordenarPor('descripcion')">Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let categoria of categoriasPaginadas">
+        <td>{{ categoria.idCategoria }}</td>
+        <td>{{ categoria.nombre }}</td>
+        <td>{{ categoria.descripcion }}</td>
+        <td>
+          <button class="btn-warning" (click)="editar(categoria)">Editar</button>
+          <button class="btn-danger" (click)="eliminar(categoria.idCategoria)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="paginacion">
+    <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1">Anterior</button>
+    Página {{ paginaActual }} de {{ totalPaginas }}
+    <button (click)="cambiarPagina(1)" [disabled]="paginaActual >= totalPaginas">Siguiente</button>
+  </div>
+
+  <button class="btn-primary" (click)="mostrarFormulario = !mostrarFormulario">
+    {{ mostrarFormulario ? 'Cancelar' : 'Registrar Categoría' }}
+  </button>
+
+  <form *ngIf="mostrarFormulario" [formGroup]="form" (ngSubmit)="submit()" class="formulario">
+    <label>
+      Nombre:
+      <input type="text" formControlName="nombre" />
+    </label>
+    <label>
+      Descripción:
+      <input type="text" formControlName="descripcion" />
+    </label>
+    <div class="form-buttons">
+      <button type="submit" [disabled]="form.invalid" class="btn-success">
+        {{ editandoId ? 'Actualizar' : 'Registrar' }}
+      </button>
+      <button type="button" (click)="cancelar()" class="btn-cancelar">Cancelar</button>
+    </div>
+  </form>
+</div>

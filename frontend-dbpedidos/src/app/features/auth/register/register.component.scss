@@ -1,0 +1,146 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff, #f8fafc);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-box {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 360px;
+  text-align: center;
+}
+
+.app-title {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.register-title {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #334155;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #475569;
+  }
+
+  input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  font-size: 1rem;
+  box-sizing: border-box; // ✅ agregado
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+  }
+}
+
+}
+
+.btn-register {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  width: 100%;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: #1d4ed8;
+  }
+}
+
+.btn-cancel {
+  background-color: #64748b;
+  color: white;
+  border: none;
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  width: 100%;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: #475569;
+  }
+}
+
+.login-link {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+
+  button {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    margin-left: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background-color: #4b5563;
+    }
+  }
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.input-icon {
+  position: relative;
+
+  i {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: 1rem;
+  }
+
+  input {
+    padding-left: 2.2rem !important;
+  }
+}
+

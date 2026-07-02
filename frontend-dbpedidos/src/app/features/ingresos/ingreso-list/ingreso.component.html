@@ -1,0 +1,207 @@
+<div class="container">
+  <h2 class="title">Listado de Ingresos</h2>
+
+  <!-- Filtro y cantidad -->
+  <div class="toolbar">
+    <input type="text" placeholder="Buscar por proveedor o trabajador..." [(ngModel)]="busqueda" class="form-control" />
+    <select [(ngModel)]="cantidadPorPagina" class="form-select">
+      <option [ngValue]="5">5</option>
+      <option [ngValue]="10">10</option>
+      <option [ngValue]="20">20</option>
+    </select>
+  </div>
+
+  <!-- Tabla de ingresos -->
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th (click)="ordenarPor('serie')">Serie</th>
+          <th (click)="ordenarPor('correlativo')">Correlativo</th>
+          <th (click)="ordenarPor('fecha')">Fecha</th>
+          <th>Proveedor</th>
+          <th>Trabajador</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let i of ingresosFiltradosPaginados">
+          <tr>
+            <td>{{ i.serie }}</td>
+            <td>{{ i.correlativo }}</td>
+            <td>{{ i.fecha | date: 'yyyy-MM-dd' }}</td>
+            <td>{{ i.nombreProveedor }}</td>
+            <td>{{ i.nombreTrabajador }}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-success me-1" (click)="toggleDetallesIngreso(i.idIngreso)">
+                {{ filaExpandida === i.idIngreso ? 'Ocultar' : 'Ver' }} Detalles
+              </button>
+              <button class="btn btn-sm btn-warning me-1" (click)="editarIngreso(i)">Editar</button>
+              <button class="btn btn-sm btn-danger" (click)="eliminarIngreso(i.idIngreso)">Eliminar</button>
+            </td>
+          </tr>
+
+          <!-- Detalles de ingreso -->
+          <tr *ngIf="filaExpandida === i.idIngreso">
+            <td colspan="6">
+              <table class="detalle-tabla">
+                <thead>
+                  <tr>
+                    <th>Artículo</th>
+                    <th>Precio Compra</th>
+                    <th>Precio Venta</th>
+                    <th>Stock Inicial</th>
+                    <th>Stock Actual</th>
+                    <th>F. Producción</th>
+                    <th>F. Vencimiento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let d of ingresoSeleccionadoConDetalles[i.idIngreso]">
+                    <td>{{ obtenerNombreArticulo(d.idArticulo) }}</td>
+                    <td>{{ d.precioCompra }}</td>
+                    <td>{{ d.precioVenta }}</td>
+                    <td>{{ d.stockInicial }}</td>
+                    <td>{{ d.stockActual }}</td>
+                    <td>{{ d.fechaProduccion | date: 'yyyy-MM-dd' }}</td>
+                    <td>{{ d.fechaVencimiento | date: 'yyyy-MM-dd' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div class="pagination" *ngIf="totalPaginas > 1">
+    <button [disabled]="paginaActual === 1" (click)="cambiarPagina(-1)">Anterior</button>
+    <span>Página {{ paginaActual }}</span>
+    <button [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(1)">Siguiente</button>
+  </div>
+
+  <!-- Botón para mostrar formulario -->
+  <div class="text-end mt-3">
+    <button class="btn btn-primary" (click)="mostrarFormulario = !mostrarFormulario">
+      {{ mostrarFormulario ? 'Ocultar formulario' : 'Nuevo Ingreso' }}
+    </button>
+  </div>
+
+  <!-- Formulario de ingreso -->
+  <form *ngIf="mostrarFormulario" [formGroup]="form" (ngSubmit)="submit()" class="form-section mt-4">
+    <div class="form-header">
+      {{ idIngresoEditando ? 'Editar ingreso' : 'Registrar nuevo ingreso' }}
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Proveedor</label>
+        <select formControlName="idProveedor">
+          <option [ngValue]="null">Seleccione proveedor</option>
+          <option *ngFor="let p of proveedores" [value]="p.idProveedor">{{ p.razonSocial }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Trabajador</label>
+        <select formControlName="idTrabajador">
+          <option [ngValue]="null">Seleccione trabajador</option>
+          <option *ngFor="let t of trabajadores" [value]="t.idTrabajador">{{ t.nombre }} {{ t.apellidos }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" formControlName="fecha" />
+      </div>
+
+      <div class="form-group">
+        <label>Tipo Comprobante</label>
+        <select formControlName="tipoComprobante">
+          <option value="Boleta">Boleta</option>
+          <option value="Factura">Factura</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Serie</label>
+        <input type="text" formControlName="serie" />
+      </div>
+
+      <div class="form-group">
+        <label>Correlativo</label>
+        <input type="text" formControlName="correlativo" />
+      </div>
+
+      <div class="form-group">
+        <label>IGV (%)</label>
+        <input type="number" formControlName="igv" />
+      </div>
+
+      <div class="form-group">
+        <label>Estado</label>
+        <select formControlName="estado">
+          <option value="Aceptado">Aceptado</option>
+          <option value="Anulado">Anulado</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Detalles -->
+    <h4 class="mt-4">Detalles del Ingreso</h4>
+    <button type="button" class="btn btn-outline-success btn-sm mb-2" (click)="agregarDetalle()">+ Agregar Detalle</button>
+
+    <div class="detalle-grid" *ngFor="let d of detalles; let i = index">
+      <div class="detalle-group">
+        <label>Artículo</label>
+        <select [(ngModel)]="d.idArticulo" [ngModelOptions]="{standalone: true}">
+          <option [ngValue]="0">Seleccione artículo</option>
+          <option *ngFor="let a of articulos" [value]="a.idArticulo">{{ a.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="detalle-group">
+        <label>Precio Compra</label>
+        <input type="number" [(ngModel)]="d.precioCompra" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group">
+        <label>Precio Venta</label>
+        <input type="number" [(ngModel)]="d.precioVenta" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group">
+        <label>Stock Inicial</label>
+        <input type="number" [(ngModel)]="d.stockInicial" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group">
+        <label>Stock Actual</label>
+        <input type="number" [(ngModel)]="d.stockActual" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group">
+        <label>Producción</label>
+        <input type="date" [(ngModel)]="d.fechaProduccion" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group">
+        <label>Vencimiento</label>
+        <input type="date" [(ngModel)]="d.fechaVencimiento" [ngModelOptions]="{standalone: true}" />
+      </div>
+
+      <div class="detalle-group detalle-boton">
+        <label>&nbsp;</label>
+        <button type="button" class="btn btn-danger btn-sm" (click)="eliminarDetalle(i)">X</button>
+      </div>
+    </div>
+
+    <!-- Botones finales -->
+    <div class="botones-finales">
+      <button class="btn btn-primary" type="submit">Guardar Ingreso</button>
+      <button class="btn btn-danger" type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</div>

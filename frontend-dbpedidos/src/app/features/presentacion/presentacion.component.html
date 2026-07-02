@@ -1,0 +1,72 @@
+<div class="container">
+  <h2 class="title">Listado de Presentaciones</h2>
+
+  <!-- Filtro y cantidad -->
+  <div class="toolbar">
+    <input
+      type="text"
+      [(ngModel)]="filtro"
+      (ngModelChange)="actualizarVista()"
+      placeholder="Buscar por nombre o descripción..."
+    />
+    <select [(ngModel)]="registrosPorPagina">
+      <option *ngFor="let o of [5, 10, 25, 50]" [value]="o">{{ o }}</option>
+    </select>
+  </div>
+
+  <!-- Tabla de presentaciones -->
+  <table>
+    <thead>
+      <tr>
+        <th (click)="ordenarPor('nombre')">Nombre</th>
+        <th (click)="ordenarPor('descripcion')">Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of presentacionesPaginadas">
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.descripcion }}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-1" (click)="editar(p)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="eliminar(p.idPresentacion)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="pagination">
+    <button [disabled]="paginaActual === 1" (click)="cambiarPagina(-1)">Anterior</button>
+    <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+    <button [disabled]="paginaActual >= totalPaginas" (click)="cambiarPagina(1)">Siguiente</button>
+  </div>
+
+  <!-- Botón para mostrar formulario -->
+  <button class="btn btn-primary mt-3" (click)="mostrarFormulario = !mostrarFormulario">
+    {{ mostrarFormulario ? 'Cancelar' : 'Registrar Presentación' }}
+  </button>
+
+  <!-- Formulario -->
+  <form *ngIf="mostrarFormulario" [formGroup]="form" (ngSubmit)="submit()" class="form-section mt-4">
+    <div class="form-header">{{ editingId ? 'Editar Presentación' : 'Nueva Presentación' }}</div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre:</label>
+        <input type="text" formControlName="nombre" />
+      </div>
+      <div class="form-group">
+        <label>Descripción:</label>
+        <input type="text" formControlName="descripcion" />
+      </div>
+    </div>
+
+    <div class="botones-finales">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        {{ editingId ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</div>

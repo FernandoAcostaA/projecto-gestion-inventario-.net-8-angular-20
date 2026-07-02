@@ -1,0 +1,270 @@
+<div class="container">
+  <h2 class="title">Listado de Ventas</h2>
+
+  <!-- Filtro y cantidad por página -->
+  <div class="toolbar">
+    <input [(ngModel)]="filtro" (ngModelChange)="actualizarVista()" placeholder="Buscar por cliente o trabajador" />
+    <select [(ngModel)]="cantidadPorPagina" (change)="actualizarVista()">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+    </select>
+  </div>
+
+  <!-- Tabla de ventas -->
+  <table>
+    <thead>
+      <tr>
+        <th (click)="cambiarOrden('idVenta')">ID</th>
+        <th (click)="cambiarOrden('clienteNombre')">Cliente</th>
+        <th (click)="cambiarOrden('trabajadorNombre')">Trabajador</th>
+        <th (click)="cambiarOrden('fecha')">Fecha</th>
+        <th>Comprobante</th>
+        <th (click)="cambiarOrden('igv')">IGV</th>
+        <th>Detalles</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let v of ventasFiltradasPaginadas">
+        <tr>
+          <td>{{ v.idVenta }}</td>
+          <td>{{ v.clienteNombre }}</td>
+          <td>{{ v.trabajadorNombre }}</td>
+          <td>{{ v.fecha | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ v.tipoComprobante }} {{ v.serie }}-{{ v.correlativo }}</td>
+          <td>{{ v.igv }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-success" (click)="v.expanded = !v.expanded">
+              {{ v.expanded ? 'Ocultar detalles' : 'Ver detalles' }}
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-warning me-1" (click)="editarVenta(v)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="eliminarVenta(v.idVenta)">Eliminar</button>
+          </td>
+        </tr>
+        <tr *ngIf="v.expanded">
+          <td colspan="8">
+            <table class="detalle-tabla">
+              <thead>
+                <tr>
+                  <th>Artículo</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Descuento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of v.detalles">
+                  <td>{{ d.articuloNombre }}</td>
+                  <td>{{ d.cantidad }}</td>
+                  <td>{{ d.precioVenta | currency }}</td>
+                  <td>{{ d.descuento }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="pagination">
+    <button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
+    <span>Página {{ paginaActual }}</span>
+    <button [disabled]="ventas.length <= paginaActual * cantidadPorPagina" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
+  </div>
+
+  <!-- Botón para mostrar/ocultar formulario -->
+  <button class="btn btn-primary" (click)="mostrarFormulario = !mostrarFormulario">
+    {{ idVentaEditando ? 'Editar venta' : 'Registrar nueva venta' }}
+  </button>
+
+  <!-- Formulario de venta -->
+  <div class="form-section" *ngIf="mostrarFormulario">
+   <form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-header">Formulario de Venta</div>
+
+  <div class="form-grid">
+    <div class="form-group autocomplete-group">
+      <label>Cliente:</label>
+      <div class="autocomplete-wrapper">
+        <input
+          [(ngModel)]="clienteTexto"
+          (input)="mostrarDropdown = true"
+          (focus)="mostrarDropdown = true"
+          (blur)="onBlurCliente()"
+          placeholder="Escribe nombre o documento del cliente..."
+          [ngModelOptions]="{standalone: true}"
+        />
+        <div class="dropdown" *ngIf="mostrarDropdown && clienteTexto.trim()">
+          <div
+            class="dropdown-item"
+            *ngFor="let c of clientesFiltrados"
+            (mousedown)="seleccionarCliente(c)"
+          >
+            <span class="dropdown-nombre">{{ c.nombre }} {{ c.apellidos }}</span>
+            <span class="dropdown-doc">{{ c.numDocumento }}</span>
+          </div>
+          <div
+            class="dropdown-item crear-nuevo"
+            *ngIf="clientesFiltrados.length === 0"
+            (mousedown)="crearClienteRapido()"
+          >
+            + Crear nuevo cliente: "<strong>{{ clienteTexto }}</strong>"
+          </div>
+        </div>
+      </div>
+      <small *ngIf="clienteSeleccionado" class="cliente-seleccionado">
+        ✓ {{ clienteSeleccionado.nombre }} {{ clienteSeleccionado.apellidos }}
+        <button type="button" class="btn-ai-insight" (click)="verInsightsCliente()" title="Ver insights IA del cliente">
+          🤖
+        </button>
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="trabajador">Trabajador (opcional):</label>
+      <input type="hidden" formControlName="idCliente" />
+      <select formControlName="idTrabajador" id="trabajador">
+        <option [ngValue]="null">Automático (usuario actual)</option>
+        <option *ngFor="let t of trabajadores" [ngValue]="t.idTrabajador">
+          {{ t.nombre }} {{ t.apellidos }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="fecha">Fecha:</label>
+      <input type="date" formControlName="fecha" id="fecha" />
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo Comprobante:</label>
+      <select formControlName="tipoComprobante" id="tipo">
+        <option value="Boleta">Boleta</option>
+        <option value="Factura">Factura</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="serie">Serie:</label>
+      <input type="text" formControlName="serie" id="serie" placeholder="Serie" />
+    </div>
+
+    <div class="form-group">
+      <label for="correlativo">Correlativo:</label>
+      <input type="text" formControlName="correlativo" id="correlativo" placeholder="Correlativo" />
+    </div>
+
+    <div class="form-group">
+      <label for="igv">IGV (%):</label>
+      <input type="number" formControlName="igv" id="igv" placeholder="IGV" />
+    </div>
+  </div>
+
+  <!-- Detalles -->
+<h4>Detalles de la Venta</h4>
+
+<!-- Modal insights del cliente -->
+<div class="modal-overlay" *ngIf="mostrarInsightsCliente" (click)="cerrarInsights()">
+  <div class="modal-content ai-insights-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🤖 Insights del Cliente</h3>
+      <button type="button" class="btn-close" (click)="cerrarInsights()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="cargandoInsight" class="ai-loading">
+        <span>Analizando cliente...</span>
+        <div class="spinner"></div>
+      </div>
+      <div *ngIf="!cargandoInsight && insightsCliente" class="ai-insights-text">
+        {{ insightsCliente }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Buscador de artículos (siempre visible para agregar detalles) -->
+<div class="detalle-grid">
+  <div class="detalle-group" style="grid-column: 1 / -1;">
+    <label>
+      Buscar artículo para agregar:
+      <button type="button" class="btn-ia-toggle" [class.active]="modoBusquedaIA" (click)="toggleBusquedaIA()" title="Búsqueda inteligente IA">
+        🔍 IA {{ modoBusquedaIA ? 'ON' : 'OFF' }}
+      </button>
+    </label>
+    <div class="autocomplete-wrapper">
+      <input
+        [(ngModel)]="articuloTexto"
+        (input)="modoBusquedaIA ? null : (mostrarDropdownArticulo = true)"
+        (focus)="mostrarDropdownArticulo = true"
+        (blur)="onBlurArticulo()"
+        (keyup.enter)="modoBusquedaIA ? buscarConIA() : null"
+        placeholder="{{ modoBusquedaIA ? 'Ej: gaseosas pequeñas, lácteos, limpieza...' : 'Escribe el nombre del artículo...' }}"
+        [ngModelOptions]="{standalone: true}"
+      />
+      <button *ngIf="modoBusquedaIA && articuloTexto.trim()" type="button" class="btn-ia-search" (click)="buscarConIA()" [disabled]="cargandoInsight">
+        {{ cargandoInsight ? '...' : '🔍' }}
+      </button>
+      <div class="dropdown" *ngIf="mostrarDropdownArticulo && articuloTexto.trim()">
+        <div
+          class="dropdown-item"
+          *ngFor="let a of articulosFiltrados"
+          (mousedown)="seleccionarArticulo(a)"
+        >
+          <span class="dropdown-nombre">{{ a.nombre }}</span>
+          <span class="dropdown-doc">Stock: {{ a.stockTotal }}</span>
+        </div>
+        <div class="dropdown-item" *ngIf="articulosFiltrados.length === 0">
+          <span *ngIf="modoBusquedaIA">Presiona Enter o el botón 🔍 para buscar con IA</span>
+          <span *ngIf="!modoBusquedaIA">Sin resultados para "<strong>{{ articuloTexto }}</strong>"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lista de detalles ya agregados -->
+<div class="detalle-grid" *ngFor="let d of detalles; let i = index">
+  <div class="detalle-group">
+    <label>Artículo:</label>
+    <input [value]="getNombreArticuloDesdeBatch(d.idDetalleIngreso)" class="readonly-input" readonly />
+  </div>
+
+  <div class="detalle-group">
+    <label>Cantidad:</label>
+    <input type="number" [(ngModel)]="d.cantidad" name="cantidad{{i}}" [ngModelOptions]="{standalone: true}" min="1" />
+  </div>
+
+  <div class="detalle-group">
+    <label>Precio Venta:</label>
+    <input type="number" [(ngModel)]="d.precioVenta" name="precioVenta{{i}}" [ngModelOptions]="{standalone: true}" />
+  </div>
+
+  <div class="detalle-group">
+    <label>Descuento (%):</label>
+    <input type="number" [(ngModel)]="d.descuento" name="descuento{{i}}" [ngModelOptions]="{standalone: true}" />
+  </div>
+
+  <div class="detalle-group detalle-boton">
+    <label>&nbsp;</label>
+    <button type="button" class="btn btn-sm btn-danger" (click)="eliminarDetalle(i)">X</button>
+  </div>
+</div>
+
+<p *ngIf="detalles.length === 0" class="detalle-vacio">Busca un artículo arriba para agregarlo a la venta.</p>
+
+
+  <div class="botones-finales">
+    <button class="btn btn-primary" type="submit">
+      {{ idVentaEditando ? 'Guardar Cambios' : 'Registrar Venta' }}
+    </button>
+    <button class="btn btn-danger" type="button" (click)="cancelarEdicion()">Cancelar</button>
+  </div>
+</form>
+
+  </div>
+</div>

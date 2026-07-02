@@ -1,0 +1,85 @@
+<!-- NAVBAR -->
+<nav class="navbar" *ngIf="authService.isAuthenticated()">
+  <div class="navbar-container">
+
+    <!-- Logo principal -->
+    <div class="navbar-logo">
+      <a [routerLink]="''"><i class="fas fa-home"></i> INDEX</a>
+    </div>
+
+    <!-- Menú de navegación -->
+    <ul class="navbar-links">
+      <li>
+        <a [routerLink]="'/trabajadores'" routerLinkActive="active">
+          <i class="fas fa-users-cog"></i> Trabajadores
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/clientes'" routerLinkActive="active">
+          <i class="fas fa-user-friends"></i> Clientes
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/proveedores'" routerLinkActive="active">
+          <i class="fas fa-truck"></i> Proveedores
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/articulos'" routerLinkActive="active">
+          <i class="fas fa-boxes"></i> Artículos
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/categorias'" routerLinkActive="active">
+          <i class="fas fa-tags"></i> Categorías
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/presentaciones'" routerLinkActive="active">
+          <i class="fas fa-box"></i> Presentaciones
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/ingresos'" routerLinkActive="active">
+          <i class="fas fa-file-invoice-dollar"></i> Ingresos
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/ventas'" routerLinkActive="active">
+          <i class="fas fa-cash-register"></i> Ventas
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/reportes'" routerLinkActive="active">
+          <i class="fas fa-chart-pie"></i> Reportes
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/auditoria'" routerLinkActive="active">
+          <i class="fas fa-history"></i> Auditoría
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/ai-report'" routerLinkActive="active">
+          <i class="fas fa-brain"></i> Reporte IA
+        </a>
+      </li>
+    </ul>
+
+    <!-- Botón de logout -->
+    <button class="logout-button" (click)="logout()">Cerrar sesión</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<router-outlet />
+
+<!-- AI Assistant -->
+<app-ai-assistant />
+
+<!-- FOOTER -->
+<footer *ngIf="authService.isAuthenticated()" class="footer">
+  <div class="footer-container">
+    <p>&copy; {{ currentYear }} UPDS. Todos los derechos reservados.</p>
+  </div>
+</footer>

@@ -1,0 +1,160 @@
+<div class="card-container">
+  <h2 class="title">Listado de Artículos</h2>
+
+  <!-- Alerta de stock bajo -->
+  <div class="stock-alert" *ngIf="articulosStockBajo.length > 0">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>¡Alerta!</strong>
+    {{ articulosStockBajo.length }} artículo(s) con stock bajo ({{ stockBajoMinimo }} o menos unidades):
+    <span *ngFor="let a of articulosStockBajo; let last = last">
+      <strong>{{ a.nombre }}</strong> ({{ a.stockTotal }} uds){{ last ? '' : ', ' }}
+    </span>
+  </div>
+
+  <!-- Alerta de stock agotado -->
+  <div class="stock-alert stock-agotado" *ngIf="articulosAgotados.length > 0">
+    <i class="fas fa-times-circle"></i>
+    <strong>¡Sin stock!</strong>
+    {{ articulosAgotados.length }} artículo(s) agotados:
+    <span *ngFor="let a of articulosAgotados; let last = last">
+      <strong>{{ a.nombre }}</strong>{{ last ? '' : ', ' }}
+    </span>
+  </div>
+
+  <div class="filtro-container">
+    <input class="filtro-input" type="text" [(ngModel)]="filtro" placeholder="Buscar por cualquier campo" />
+    <select [(ngModel)]="registrosPorPagina" class="filtro-input" (change)="paginaActual = 1">
+      <option *ngFor="let opcion of opcionesPorPagina" [value]="opcion">{{ opcion }}</option>
+    </select>
+  </div>
+
+  <table class="styled-table" *ngIf="!cargando && articulos.length">
+    <thead>
+      <tr>
+        <th (click)="ordenarPor('idArticulo')">ID</th>
+        <th (click)="ordenarPor('codigo')">Código</th>
+        <th (click)="ordenarPor('nombre')">Nombre</th>
+        <th (click)="ordenarPor('descripcion')">Descripción</th>
+        <th (click)="ordenarPor('categoriaNombre')">Categoría</th>
+        <th (click)="ordenarPor('presentacionNombre')">Presentación</th>
+        <th (click)="ordenarPor('stockTotal')">Stock</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let articulo of articulosPaginados" [class.fila-stock-bajo]="articulo.stockTotal > 0 && articulo.stockTotal <= stockBajoMinimo" [class.fila-stock-agotado]="articulo.stockTotal === 0">
+        <td>{{ articulo.idArticulo }}</td>
+        <td>{{ articulo.codigo }}</td>
+        <td>{{ articulo.nombre }}</td>
+        <td>{{ articulo.descripcion }}</td>
+        <td>{{ articulo.categoriaNombre }}</td>
+        <td>{{ articulo.presentacionNombre }}</td>
+        <td>
+          <span class="stock-badge" [class.stock-bajo]="articulo.stockTotal > 0 && articulo.stockTotal <= stockBajoMinimo" [class.stock-agotado]="articulo.stockTotal === 0" [class.stock-ok]="articulo.stockTotal > stockBajoMinimo">
+            {{ articulo.stockTotal }}
+          </span>
+        </td>
+        <td>
+          <img *ngIf="articulo.imagen" [src]="'data:image/png;base64,' + articulo.imagen" width="50" />
+        </td>
+        <td>
+          <button class="btn-warning" (click)="editar(articulo)">Editar</button>
+          <button class="btn-success" (click)="abrirModalReposicion(articulo)">Reponer Stock</button>
+          <button class="btn-danger" (click)="eliminar(articulo.idArticulo)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="pagination">
+    <button class="btn-outline" (click)="cambiarPagina(-1)" [disabled]="paginaActual <= 1">Anterior</button>
+    <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+    <button class="btn-outline" (click)="cambiarPagina(1)" [disabled]="paginaActual >= totalPaginas">Siguiente</button>
+  </div>
+
+  <!-- Botón para mostrar formulario -->
+  <button class="btn-primary btn-toggle" (click)="toggleFormulario()">
+    {{ mostrarFormulario ? 'Ocultar Formulario' : 'Registrar Artículo' }}
+  </button>
+
+  <!-- Formulario -->
+  <div *ngIf="mostrarFormulario" class="form-container">
+    <h3>{{ editandoId ? 'Editar Artículo' : 'Crear Artículo' }}</h3>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" enctype="multipart/form-data">
+      <div>
+        <label>Código:</label>
+        <input formControlName="codigo" />
+      </div>
+      <div>
+        <label>Nombre:</label>
+        <input formControlName="nombre" />
+      </div>
+      <div>
+        <label>Descripción:</label>
+        <input formControlName="descripcion" />
+      </div>
+      <div>
+        <label>Categoría:</label>
+        <select formControlName="idCategoria">
+          <option [ngValue]="null">Seleccione...</option>
+          <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombre }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Presentación:</label>
+        <select formControlName="idPresentacion">
+          <option [ngValue]="null">Seleccione...</option>
+          <option *ngFor="let pres of presentaciones" [value]="pres.idPresentacion">{{ pres.nombre }}</option>
+        </select>
+      </div>
+      <div>
+        <label>Imagen:</label>
+        <input type="file" (change)="onImageSelected($event)" />
+      </div>
+      <div *ngIf="imagenPreview" class="image-preview">
+        <img [src]="imagenPreview" width="100" />
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn-primary" [disabled]="form.invalid">
+          {{ editandoId ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button type="button" class="btn-outline" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Reposición de Stock -->
+  <div class="modal-overlay" *ngIf="mostrarModalReposicion" (click.self)="cerrarModalReposicion()">
+    <div class="modal-content">
+      <h3>Reponer Stock</h3>
+      <p><strong>Artículo:</strong> {{ articuloReposicion?.nombre }}</p>
+      <p><strong>Stock actual:</strong> <span class="stock-badge">{{ articuloReposicion?.stockTotal }}</span></p>
+
+      <div class="modal-form">
+        <div>
+          <label>Cantidad a agregar:</label>
+          <input type="number" [(ngModel)]="cantidadReposicion" min="1" placeholder="Ej: 10" />
+        </div>
+        <div>
+          <label>Precio de compra (opcional):</label>
+          <input type="number" [(ngModel)]="precioCompraReposicion" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div>
+          <label>Precio de venta (opcional):</label>
+          <input type="number" [(ngModel)]="precioVentaReposicion" min="0" step="0.01" placeholder="0.00" />
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <button class="btn-primary" (click)="confirmarReposicion()" [disabled]="reponiendo || cantidadReposicion <= 0">
+          {{ reponiendo ? 'Reponiendo...' : 'Confirmar Reposición' }}
+        </button>
+        <button class="btn-outline" (click)="cerrarModalReposicion()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

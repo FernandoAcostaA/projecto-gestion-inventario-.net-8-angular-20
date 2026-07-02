@@ -1,0 +1,74 @@
+<div class="home-container">
+  <h1 class="main-title">Bienvenido a <span class="highlight">Ventas La Ganga</span></h1>
+  <p class="subtitle">Gestiona todos los módulos desde aquí</p>
+
+  <!-- Resumen IA del negocio -->
+  <div class="ai-summary-card">
+    <div class="ai-summary-header">
+      <span>🤖 Resumen del Negocio</span>
+      <button class="btn-refresh" (click)="cargarResumen()" [disabled]="cargandoResumen" title="Actualizar resumen">
+        🔄
+      </button>
+    </div>
+    <div class="ai-summary-body">
+      @if (cargandoResumen) {
+        <div class="ai-loading">
+          <span>Generando resumen inteligente...</span>
+          <div class="spinner"></div>
+        </div>
+      } @else if (errorResumen) {
+        <div class="ai-error">
+          No se pudo generar el resumen. 
+          <button class="btn-retry" (click)="cargarResumen()">Reintentar</button>
+          <small>Verifica que la IA esté configurada en Ajustes.</small>
+        </div>
+      } @else if (resumenIA) {
+        <div class="ai-summary-text">{{ resumenIA }}</div>
+      }
+    </div>
+  </div>
+
+  <div class="grid-menu">
+    <a routerLink="/trabajadores" class="card" role="link">
+      <i class="fas fa-users-cog icon"></i>
+      <span>Trabajadores</span>
+    </a>
+    <a routerLink="/clientes"  class="card" role="link">
+      <i class="fas fa-user-friends icon"></i>
+      <span>Clientes</span>
+    </a>
+    <a routerLink="/proveedores" class="card" role="link">
+      <i class="fas fa-truck icon"></i>
+      <span>Proveedores</span>
+    </a>
+    <a routerLink="/articulos" class="card" role="link">
+      <i class="fas fa-boxes icon"></i>
+      <span>Artículos</span>
+    </a>
+    <a routerLink="/categorias" class="card" role="link">
+      <i class="fas fa-tags icon"></i>
+      <span>Categorías</span>
+    </a>
+    <a routerLink="/presentaciones" class="card" role="link">
+      <i class="fas fa-box icon"></i>
+      <span>Presentaciones</span>
+    </a>
+    <a routerLink="/ingresos" class="card" role="link">
+      <i class="fas fa-file-invoice-dollar icon"></i>
+      <span>Ingresos</span>
+    </a>
+    
+    <a routerLink="/ventas" class="card" role="link">
+      <i class="fas fa-cash-register icon"></i>
+      <span>Ventas</span>
+    </a>
+    <a routerLink="/reportes" class="card" role="link">
+      <i class="fas fa-chart-pie icon"></i>
+      <span>Reportes</span>
+    </a>
+    <a routerLink="/auditoria" class="card" role="link">
+      <i class="fas fa-history icon"></i>
+      <span>Auditoría</span>
+    </a>
+  </div>
+</div>

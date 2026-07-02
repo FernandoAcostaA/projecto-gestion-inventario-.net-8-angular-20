@@ -1,0 +1,116 @@
+<div class="container"> 
+  <h2 class="title">Listado de Clientes</h2>
+
+  <!-- Toolbar superior -->
+  <div class="toolbar">
+    <input [(ngModel)]="filtro" (ngModelChange)="actualizarVista()" placeholder="Buscar por cualquier campo" />
+    <select [(ngModel)]="cantidadPorPagina" (change)="actualizarVista()">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+    </select>
+    <button (click)="mostrarFormulario = !mostrarFormulario">
+      {{ mostrarFormulario ? 'Ocultar formulario' : (editandoId ? 'Editar Cliente' : 'Crear Cliente') }}
+    </button>
+  </div>
+
+  <!-- Formulario de registro/edición -->
+  <div *ngIf="mostrarFormulario" class="formulario">
+    <h3>{{ editandoId ? 'Editar Cliente' : 'Crear Cliente' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div>
+          <label>Nombre:</label>
+          <input type="text" formControlName="nombre" placeholder="Nombre" />
+        </div>
+        <div>
+          <label>Apellidos:</label>
+          <input type="text" formControlName="apellidos" placeholder="Apellidos" />
+        </div>
+        <div>
+          <label>Sexo:</label>
+          <select formControlName="sexo">
+            <option value="">Seleccionar</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+        </div>
+        <div>
+          <label>Fecha de Nacimiento:</label>
+          <input type="date" formControlName="fechaNacimiento" />
+        </div>
+        <div>
+          <label>Tipo Documento:</label>
+          <input type="text" formControlName="tipoDocumento" placeholder="CI / DNI / Pasaporte" />
+        </div>
+        <div>
+          <label>N° Documento:</label>
+          <input type="text" formControlName="numDocumento" placeholder="Número de documento" />
+        </div>
+        <div>
+          <label>Dirección:</label>
+          <input type="text" formControlName="direccion" placeholder="Dirección" />
+        </div>
+        <div>
+          <label>Teléfono:</label>
+          <input type="text" formControlName="telefono" placeholder="Teléfono" />
+        </div>
+        <div>
+          <label>Email:</label>
+          <input type="email" formControlName="email" placeholder="Email" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="form.invalid">
+          {{ editandoId ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <table>
+    <thead>
+      <tr>
+        <th (click)="cambiarOrden('idCliente')">ID</th>
+        <th (click)="cambiarOrden('nombre')">Nombre</th>
+        <th (click)="cambiarOrden('apellidos')">Apellidos</th>
+        <th (click)="cambiarOrden('sexo')">Sexo</th>
+        <th (click)="cambiarOrden('fechaNacimiento')">F. Nac.</th>
+        <th>Documento</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of clientesPaginados">
+        <td>{{ c.idCliente }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.apellidos }}</td>
+        <td>{{ c.sexo || '-' }}</td>
+        <td>{{ c.fechaNacimiento?.substring(0, 10) || '-' }}</td>
+        <td>{{ c.tipoDocumento }}: {{ c.numDocumento }}</td>
+        <td>{{ c.direccion }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>{{ c.email }}</td>
+        <td>
+          <button class="btn-primary" (click)="editar(c)">Editar</button>
+          <button class="btn-danger" (click)="eliminar(c.idCliente!)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="pagination">
+    <button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
+    <span>Página {{ paginaActual }}</span>
+    <button
+      [disabled]="paginaActual * cantidadPorPagina >= clientesFiltrados.length"
+      (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
+  </div>
+</div>
