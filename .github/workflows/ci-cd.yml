@@ -1,0 +1,57 @@
+name: CI/CD Pipeline — PedidosApi
+
+on:
+  push:
+    branches: [ main, develop, "feature/**", "release/**", "hotfix/**" ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    name: Lint and Code Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet restore PedidosApi/PedidosApi.csproj
+      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release --no-restore
+
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet restore PedidosApi/PedidosApi.csproj
+      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release --no-restore
+      - run: dotnet publish PedidosApi/PedidosApi.csproj --configuration Release --output ./publish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-build-${{ github.sha }}
+          path: ./publish
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet build PedidosApi/PedidosApi.csproj --configuration Release
+      - run: echo "Sin proyecto de pruebas aún - pendiente Sprint 2"
+
+  deploy:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Deploy a staging configurado para siguiente sprint"
